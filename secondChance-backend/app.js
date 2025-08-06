@@ -6,6 +6,7 @@ const pinoLogger = require('./logger');
 const secondChanceItemsRoutes = require('./routes/secondChanceItemsRoutes');
 const connectToDatabase = require('./models/db');
 const {loadData} = require("./util/import-mongo/index");
+const searchRoutes = require('./routes/searchRoutes');
 
 
 const app = express();
@@ -14,10 +15,19 @@ const port = 3060;
 
 
 // Connect to MongoDB; we just do this one time
-connectToDatabase().then(() => {
+connectToDatabase().then(async (db) => {
     pinoLogger.info('Connected to DB');
-})
-    .catch((e) => console.error('Failed to connect to DB', e));
+
+    const count = await db.collection('gifts').countDocuments();
+
+    if (count === 0) {
+        console.log("Collection empty. Loading seed data...");
+        await loadData();
+    } else {
+        console.log("Collection already has data. Skipping load.");
+    }
+}).catch((e) => console.error('Failed to connect to DB', e));
+
 
 
 app.use(express.json());
@@ -32,7 +42,7 @@ app.use('/api/secondchance/items', secondChanceItemsRoutes);
 //{{insert code here}}
 
 // Search API Task 1: import the searchRoutes and store in a constant called searchRoutes
-//{{insert code here}}
+app.use('/api/secondchance/search', searchRoutes);
 
 
 const pinoHttp = require('pino-http');
