@@ -7,7 +7,7 @@ const secondChanceItemsRoutes = require('./routes/secondChanceItemsRoutes');
 const connectToDatabase = require('./models/db');
 const {loadData} = require("./util/import-mongo/index");
 const searchRoutes = require('./routes/searchRoutes');
-
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 app.use("*",cors());
@@ -36,7 +36,7 @@ app.use(express.json());
 app.use('/api/secondchance/items', secondChanceItemsRoutes);
 
 // authRoutes Step 2: import the authRoutes and store in a constant called authRoutes
-//{{insert code here}}
+app.use('/api/auth', authRoutes);
 
 // Items API Task 1: import the secondChanceItemsRoutes and store in a constant called secondChanceItemsRoutes
 //{{insert code here}}
