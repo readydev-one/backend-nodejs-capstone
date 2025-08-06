@@ -90,7 +90,11 @@ router.get('/:id', async (req, res, next) => {
         const secondChanceItem = await collection.findOne({ id: id });
 
         //Return the secondChanceItem as a JSON object. Return an error message if the item is not found.
-        
+        if (!secondChanceItem) {
+        return res.status(404).send("secondChanceItem not found");
+        }
+
+        res.json(secondChanceItem);
 
     } catch (e) {
         next(e);
@@ -100,12 +104,41 @@ router.get('/:id', async (req, res, next) => {
 // Update and existing item
 router.put('/:id', async(req, res,next) => {
     try {
-        //Step 5: task 1 - insert code here
-        //Step 5: task 2 - insert code here
-        //Step 5: task 3 - insert code here
-        //Step 5: task 4 - insert code here
-        //Step 5: task 5 - insert code here
+        //Connect to MongoDB
+        const db = await connectToDatabase();
+
+        //Use the collection() method to retrieve the secondChanceItems collection
+        const collection = db.collection("secondChanceItems");
+
+        //Check if the secondChanceItem exists and send an appropriate message if it doesn't exist
+        const secondChanceItem = await collection.findOne({ id });
+
+        if (!secondChanceItem) {
+        logger.error('secondChanceItem not found');
+        return res.status(404).json({ error: "secondChanceItem not found" });
+}
+        //Update the item's specific attributes.
+        secondChanceItem.category = req.body.category;
+        secondChanceItem.condition = req.body.condition;
+        secondChanceItem.age_days = req.body.age_days;
+        secondChanceItem.description = req.body.description;
+        secondChanceItem.age_years = Number((secondChanceItem.age_days/365).toFixed(1));
+        secondChanceItem.updatedAt = new Date();
+
+        const updatepreloveItem = await collection.findOneAndUpdate(
+            { id },
+            { $set: secondChanceItem },
+            { returnDocument: 'after' }
+        );
+
+        //Send confirmation
+        if(updatepreloveItem) {
+            res.json({"uploaded":"success"});
+        } else {
+            res.json({"uploaded":"failed"});
+        }
     } catch (e) {
+
         next(e);
     }
 });
@@ -113,10 +146,25 @@ router.put('/:id', async(req, res,next) => {
 // Delete an existing item
 router.delete('/:id', async(req, res,next) => {
     try {
-        //Step 6: task 1 - insert code here
-        //Step 6: task 2 - insert code here
-        //Step 6: task 3 - insert code here
-        //Step 6: task 4 - insert code here
+        //Connect to MongoDB
+        const db = await connectToDatabase();
+
+        //Access the MongoDB collection
+        const collection = db.collection("secondChanceItems");
+
+        // Find a specific secondChanceItem by ID using the collection.fineOne() method and send an appropriate message if it doesn't exist
+        const secondChanceItem = await collection.findOne({ id });
+
+        if (!secondChanceItem) {
+        logger.error('secondChanceItem not found');
+        return res.status(404).json({ error: "secondChanceItem not found" });
+        }
+
+        //Send confirmation
+        await collection.deleteOne({ id });
+        
+        res.json({"deleted":"success"});
+
     } catch (e) {
         next(e);
     }
