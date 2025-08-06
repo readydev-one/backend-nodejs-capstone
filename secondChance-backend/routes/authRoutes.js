@@ -3,7 +3,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const connectToDatabase = require('../models/db');
-const logger = require('./logger');
+const logger = require('../logger');
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'defaultsecretkey';
@@ -162,3 +162,5 @@ try {
 
 }
 });
+
+module.exports = router;
