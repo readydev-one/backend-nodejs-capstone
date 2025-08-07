@@ -15,16 +15,16 @@ const port = 3060
 
 // Connect to MongoDB; we just do this one time
 connectToDatabase().then(async (db) => {
-    pinoLogger.info('Connected to DB')
+  pinoLogger.info('Connected to DB')
 
-    const count = await db.collection('gifts').countDocuments()
+  const count = await db.collection('gifts').countDocuments()
 
-    if (count === 0) {
-        console.log('Collection empty. Loading seed data...')
-        await loadData();
-    } else {
-        console.log('Collection already has data. Skipping load.')
-    }
+  if (count === 0) {
+    logger.info('Collection empty. Loading seed data...')
+    await loadData()
+  } else {
+    logger.info('Collection already has data. Skipping load.')
+  }
 }).catch((e) => console.error('Failed to connect to DB', e))
 
 app.use(express.json())
@@ -43,7 +43,7 @@ app.use('/api/secondchance/search', searchRoutes)
 const pinoHttp = require('pino-http')
 const logger = require('./logger')
 
-app.use(pinoHttp({ logger }));
+app.use(pinoHttp({ logger }))
 
 // Use Routes
 // authRoutes Step 2: add the authRoutes and to the server by using the app.use() method.
@@ -52,17 +52,16 @@ app.use(pinoHttp({ logger }));
 
 // Search API Task 2: add the searchRoutes to the server by using the app.use() method.
 
-
 // Global Error Handler
 app.use((err, req, res, next) => {
-    console.error(err);
-    res.status(500).send('Internal Server Error')
-});
+  console.error(err)
+  res.status(500).send('Internal Server Error')
+})
 
 app.get('/', (req, res) => {
-    res.send('Inside the server')
+  res.send('Inside the server')
 })
 
 app.listen(port, () => {
-    console.log(`Server running on port ${port}`)
+  console.log(`Server running on port ${port}`)
 })
